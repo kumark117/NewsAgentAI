@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from feeds import fetch_topics
-from scorer import score_topics
+import json
+import os
+
+from learner import load_weights
 
 app = FastAPI()
 
@@ -14,7 +16,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+BASE_DIR = os.path.dirname(__file__)
+RESULTS_PATH = os.path.join(BASE_DIR, "data", "results.json")
+
+
+@app.get("/")
+def home():
+    return {"status": "AI News Agent running"}
+
+
 @app.get("/trends")
-def trends():
-    topics = fetch_topics()
-    return score_topics(topics)
+def get_trends():
+
+    if not os.path.exists(RESULTS_PATH):
+        return {"trends": [], "spikes": []}
+
+    with open(RESULTS_PATH) as f:
+        return json.load(f)
+
+
+@app.get("/weights")
+def get_weights():
+    return load_weights()

@@ -1,59 +1,62 @@
-export default function How(){
+"use client"
 
-return(
+import { useRouter } from "next/navigation"
 
-<div style={{padding:40,fontFamily:"Arial"}}>
+export default function HowItWorks() {
 
-<h1>How the AI News Trend Agent Works</h1>
+  const router = useRouter()
 
-<p>
-This system continuously monitors multiple technology news feeds
-and identifies emerging trends using lightweight signal analysis.
-</p>
+  return (
 
-<h3>Pipeline</h3>
+    <div style={{padding:20,fontFamily:"Arial"}}>
 
-<p>
-RSS Feeds → Headline Extraction → Topic Similarity Folding →
-Topic Memory → Trend Scoring → Spike Detection → Dashboard
-</p>
+      <h1>How NewsAgentAI Works</h1>
 
-<h3>Topic Similarity Folding</h3>
+      <p style={{marginTop:10}}>
+        NewsAgentAI is a lightweight learning AI agent that continuously monitors
+        RSS news feeds and detects emerging topics.
+      </p>
 
-<p>
-News headlines are clustered using lexical similarity and anchor entities
-(e.g. Apple, Tesla, ChatGPT). This prevents duplicate topics from appearing
-separately.
-</p>
+      <p>
+        The backend agent fetches articles, extracts topics, and scores them
+        using several signals such as frequency, growth, spread, and persistence.
+      </p>
 
-<h3>Trend Scoring</h3>
+      <p>
+        A monitoring loop updates topic scores over time. Rapid acceleration
+        in topic activity is detected as a "spike", while slower consistent
+        growth appears as a "trend".
+      </p>
 
-<p>
-Each topic is scored using multiple signals:
-</p>
+      <p>
+        The agent also adjusts internal weights over time based on observed
+        topic behavior, allowing the system to gradually improve how it
+        detects meaningful patterns in news activity.
+      </p>
 
-<ul>
-<li>Frequency – how often the topic appears</li>
-<li>Spread – number of sources reporting it</li>
-<li>Growth – change in frequency over time</li>
-<li>Persistence – how long the topic remains active</li>
-</ul>
+      <p>
+        The dashboard polls the backend periodically to display the latest
+        detected spikes, trends, and the current learned weights.
+      </p>
 
-<h3>Spike Detection</h3>
 
-<p>
-Sudden jumps in topic frequency trigger spike alerts,
-highlighting rapidly emerging news events.
-</p>
+      <button
+        onClick={()=>router.push("/")}
+        style={{
+          marginTop:20,
+          padding:"10px 16px",
+          background:"#0070f3",
+          color:"white",
+          border:"none",
+          borderRadius:6,
+          cursor:"pointer"
+        }}
+      >
+        ← Back to Dashboard
+      </button>
 
-<h3>Adaptive Learning</h3>
+    </div>
 
-<p>
-The agent continuously adjusts its scoring weights based on
-observed patterns in news propagation across sources.
-</p>
-</div>
-
-)
+  )
 
 }

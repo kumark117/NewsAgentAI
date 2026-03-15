@@ -7,16 +7,19 @@ from confidence import confidence
 from fold import fold_topics
 from learner import load_weights, save_weights, adjust_weights
 
+
 def score_topics(topics):
 
-    counts = {}
     clusters = fold_topics(topics)
-    for t in clusters:
-        counts[t] = counts.get(t,0) + 1
+
+    weights = load_weights()
 
     results = []
 
-    for topic,count in counts.items():
+    for c in clusters:
+
+        topic = c["title"]
+        count = c["count"]
 
         mem = topic_memory[topic]
         mem["history"].append(count)
@@ -27,8 +30,16 @@ def score_topics(topics):
         p = persistence_score(history)
         a = acceleration_score(history)
 
-        trend_score = 0.5*count + 0.5*p
-        spike_score = a
+        trend_score = (
+            weights["frequency"] * count +
+            weights["persistence"] * p +
+            weights["growth"] * g
+        )
+
+        spike_score = 0
+
+        if count >= 2 and g > 0 and a > 0:
+            spike_score = a * count
 
         conf = confidence(mem)
 
@@ -43,7 +54,6 @@ def score_topics(topics):
 
     spikes = sorted(results, key=lambda x: x["spike_score"], reverse=True)[:3]
 
-    weights = load_weights()
     weights = adjust_weights(results, weights)
     save_weights(weights)
 

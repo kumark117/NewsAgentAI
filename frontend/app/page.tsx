@@ -3,121 +3,141 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
-export default function Home() {
+export default function Dashboard() {
 
-  const [data,setData] = useState({trends:[],spikes:[]})
+  const [tick, setTick] = useState(0)
+  const [trends, setTrends] = useState<any[]>([])
+  const [spikes, setSpikes] = useState<any[]>([])
+  const [weights, setWeights] = useState<any>({})
+  const [timestamp, setTimestamp] = useState("")
 
-  async function load(){
+  // polling timer
+  useEffect(() => {
 
-    const res = await fetch("http://127.0.0.1:8000/trends")
-    const json = await res.json()
+    const id = setInterval(() => {
+      setTick(t => t + 1)
+    }, 5000)
 
-    setData(json)
+    return () => clearInterval(id)
 
-  }
+  }, [])
 
-  useEffect(()=>{
 
-    load()
+  // fetch server data
+  useEffect(() => {
 
-    const timer = setInterval(load,10000)
+    async function fetchData() {
 
-    return ()=>clearInterval(timer)
+      try {
 
-  },[])
+        const res = await fetch("http://localhost:8000/trends")
+        const data = await res.json()
+
+        setTrends(data.trends || [])
+        setSpikes(data.spikes || [])
+        setWeights(data.weights || {})
+        setTimestamp(data.timestamp || "")
+
+      } catch (err) {
+
+        console.log("fetch error", err)
+
+      }
+
+    }
+
+    fetchData()
+
+  }, [tick])
+
 
   return (
 
-    <div style={{
-      fontFamily:"Arial",
-      background:"#f5f6fa",
-      minHeight:"100vh"
-    }}>
+    <div style={{padding:20,fontFamily:"Arial"}}>
 
-      {/* HEADER */}
+      <h1>NewsAgentAI Dashboard</h1>
+
+      <Link href="/how">How It Works</Link>
+
+      <p style={{marginTop:10,color:"#777"}}>
+        Last update: {timestamp}
+      </p>
+
 
       <div style={{
-        background:"#1e293b",
-        color:"white",
-        padding:20,
-        textAlign:"center"
-      }}>
-        <h1>AI News Trend Agent</h1>
-
-        <Link href="/how">
-          <button style={{
-            marginTop:10,
-            padding:"8px 16px",
-            cursor:"pointer"
-          }}>
-            How it Works?
-          </button>
-        </Link>
-      </div>
-
-
-      {/* DASHBOARD */}
-
-      <div style={{
-        maxWidth:1000,
-        margin:"40px auto",
-        display:"grid",
-        gridTemplateColumns:"1fr 1fr",
-        gap:30
+        display:"flex",
+        gap:20,
+        marginTop:20
       }}>
 
-        {/* SPIKES */}
+
+        {/* SPIKES PANEL */}
 
         <div style={{
-          background:"white",
-          padding:25,
-          borderRadius:10,
-          boxShadow:"0 2px 10px rgba(0,0,0,0.1)"
+          flex:1,
+          background:"#111",
+          color:"white",
+          padding:15,
+          borderRadius:10
         }}>
 
-          <h2 style={{color:"#e11d48"}}>Spike Alerts</h2>
+          <h2>⚡ Spikes</h2>
 
-          <ul>
-          {data.spikes.length === 0 && (
-            <div style={{padding:30}}>Agent collecting Spike signals...</div>
-      )}
-          {data.spikes.map((s:any)=>(
-            <li key={s.topic} style={{marginBottom:10}}>
-              {s.topic}
-              <br/>
-              <small>spike score: {s.spike_score}</small>
-            </li>
+          {spikes.map((s:any,i:number)=>(
+            <div key={i} style={{
+              background:"#1f1f1f",
+              padding:8,
+              marginBottom:6,
+              borderRadius:6
+            }}>
+              {s.topic} ({s.score})
+            </div>
           ))}
-
-          </ul>
 
         </div>
 
 
-        {/* TRENDS */}
+        {/* TRENDS PANEL */}
 
         <div style={{
-          background:"white",
-          padding:25,
-          borderRadius:10,
-          boxShadow:"0 2px 10px rgba(0,0,0,0.1)"
+          flex:1,
+          background:"#111",
+          color:"white",
+          padding:15,
+          borderRadius:10
         }}>
 
-          <h2 style={{color:"#2563eb"}}>Top Trends</h2>
+          <h2>📈 Trends</h2>
 
-          <ul>
-          {data.trends.length === 0 && (
-            <div style={{padding:30}}>Agent collecting Trend signals...</div>
-          )}
-          {data.trends.map((t:any)=>(
-            <li key={t.topic} style={{marginBottom:10}}>
-              {t.topic}
-              <br/>
-              <small>trend score: {t.trend_score}</small>
-            </li>
+          {trends.map((t:any,i:number)=>(
+            <div key={i} style={{
+              background:"#1f1f1f",
+              padding:8,
+              marginBottom:6,
+              borderRadius:6
+            }}>
+              {t.topic} ({t.score})
+            </div>
           ))}
 
-          </ul>
+
+          {/* WEIGHTS */}
+
+          <div style={{
+            marginTop:20,
+            background:"#222",
+            padding:10,
+            borderRadius:8
+          }}>
+
+            <h3>Learned Weights</h3>
+
+            <div>frequency: {weights.frequency}</div>
+            <div>growth: {weights.growth}</div>
+            <div>spread: {weights.spread}</div>
+            <div>persistence: {weights.persistence}</div>
+
+          </div>
 
         </div>
 
@@ -126,4 +146,5 @@ export default function Home() {
     </div>
 
   )
+
 }
