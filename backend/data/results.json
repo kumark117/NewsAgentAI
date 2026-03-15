@@ -1,56 +1,11 @@
 {
-  "timestamp": "2026-03-15T01:51:48.493471",
-  "cycle": 55,
+  "timestamp": "2026-03-15T04:28:10.806107",
+  "cycle": 4,
   "trends": [
     {
-      "topic": "Meta reportedly considering layoffs that could affect 20% of the company",
-      "trend_score": 1.5,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "Apple drops commission rates in China without a fuss",
-      "trend_score": 1.0,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "\u2018Not built right the first time\u2019 \u2014 Musk\u2019s xAI is starting over again, again",
-      "trend_score": 0.75,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "Show HN: Han \u2013 A Korean programming language written in Rust",
-      "trend_score": 0.75,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "Trump administration is allegedly collecting $10 billion on the TikTok deal",
-      "trend_score": 0.75,
-      "spike_score": 0,
-      "confidence": 0.5
+      "topic": "The Best Outdoor Deals From the REI Member Days Sale (2026)",
+      "score": 1.0
     }
   ],
-  "spikes": [
-    {
-      "topic": "The MacBook Neo is \u2018the most repairable MacBook\u2019 in years, according to iFixit",
-      "trend_score": 0.5,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "US Army announces contract with Anduril worth up to $20B",
-      "trend_score": 0.5,
-      "spike_score": 0,
-      "confidence": 0.5
-    },
-    {
-      "topic": "Honda is killing its EVs \u2014\u00a0and any chance of competing in the future",
-      "trend_score": 0.5,
-      "spike_score": 0,
-      "confidence": 0.5
-    }
-  ]
+  "spikes": []
 }

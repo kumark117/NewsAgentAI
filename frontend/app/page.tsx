@@ -16,7 +16,7 @@ export default function Dashboard() {
 
     const id = setInterval(() => {
       setTick(t => t + 1)
-    }, 5000)
+    }, 30000)
 
     return () => clearInterval(id)
 
@@ -35,8 +35,12 @@ export default function Dashboard() {
 
         setTrends(data.trends || [])
         setSpikes(data.spikes || [])
-        setWeights(data.weights || {})
         setTimestamp(data.timestamp || "")
+
+        const weightsRes = await fetch("http://localhost:8000/weights")
+        const weightsData = await weightsRes.json()
+
+        setWeights(weightsData || {})
 
       } catch (err) {
 

@@ -5,21 +5,22 @@ import datetime
 
 from feeds import fetch_topics
 from scorer import score_topics
+from learner import load_weights
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "data")
 RESULTS_PATH = os.path.join(DATA_DIR, "results.json")
 
 
-def save_results(results, cycle):
+def save_results(trends, spikes, cycle):
 
     os.makedirs(DATA_DIR, exist_ok=True)
 
     payload = {
         "timestamp": datetime.datetime.utcnow().isoformat(),
         "cycle": cycle,
-        "trends": results["trends"],
-        "spikes": results["spikes"]
+        "trends": trends,
+        "spikes": spikes
     }
 
     with open(RESULTS_PATH, "w") as f:
@@ -41,9 +42,30 @@ def run_agent():
 
             topics = fetch_topics()
 
-            results = score_topics(topics)
+            topic_scores = score_topics(topics, load_weights())
 
-            save_results(results, cycle)
+            previous_scores = {}
+            spikes = []
+            trends = []
+
+            for topic, score in topic_scores.items():
+
+                prev = previous_scores.get(topic, 0)
+                delta = score - prev
+
+                previous_scores[topic] = score
+
+            obj = {
+                "topic": topic,
+                "score": score
+            }
+
+            if delta >= 2:      # demo-friendly threshold
+                spikes.append(obj)
+            else:
+                trends.append(obj)
+
+            save_results(trends, spikes, cycle)
 
             print("Results updated")
 

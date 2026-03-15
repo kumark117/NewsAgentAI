@@ -1,63 +1,21 @@
-from topic_memory import topic_memory
-from growth import growth_score
-from persistence import persistence_score
-from acceleration import acceleration_score
-from confidence import confidence
-
-from fold import fold_topics
-from learner import load_weights, save_weights, adjust_weights
+from collections import Counter
 
 
-def score_topics(topics):
+def score_topics(topics, weights):
 
-    clusters = fold_topics(topics)
+    topic_counts = Counter(topics)
 
-    weights = load_weights()
+    topic_scores = {}
 
-    results = []
+    for topic, count in topic_counts.items():
 
-    for c in clusters:
-
-        topic = c["title"]
-        count = c["count"]
-
-        mem = topic_memory[topic]
-        mem["history"].append(count)
-
-        history = mem["history"]
-
-        g = growth_score(history)
-        p = persistence_score(history)
-        a = acceleration_score(history)
-
-        trend_score = (
-            weights["frequency"] * count +
-            weights["persistence"] * p +
-            weights["growth"] * g
+        score = (
+            weights.get("frequency",1)*count +
+            weights.get("growth",1)*count +
+            weights.get("spread",1)*count +
+            weights.get("persistence",1)*count
         )
 
-        spike_score = 0
+        topic_scores[topic] = score
 
-        if count >= 2 and g > 0 and a > 0:
-            spike_score = a * count
-
-        conf = confidence(mem)
-
-        results.append({
-            "topic": topic,
-            "trend_score": round(trend_score,3),
-            "spike_score": round(spike_score,3),
-            "confidence": round(conf,3)
-        })
-
-    trends = sorted(results, key=lambda x: x["trend_score"], reverse=True)[:5]
-
-    spikes = sorted(results, key=lambda x: x["spike_score"], reverse=True)[:3]
-
-    weights = adjust_weights(results, weights)
-    save_weights(weights)
-
-    return {
-        "trends": trends,
-        "spikes": spikes
-    }
+    return topic_scores
